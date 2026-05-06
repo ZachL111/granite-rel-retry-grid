@@ -1,0 +1,73 @@
+{
+  "repo": "granite-rel-retry-grid",
+  "language": "Solidity",
+  "category": "Reliability",
+  "goal": "Develop a Solidity command-oriented project for retry scenarios with transition tables, invalid-transition tests, and no network dependency.",
+  "review_model": {
+    "terms": [
+      "budget pressure",
+      "failure width",
+      "recovery gap",
+      "runbook drift"
+    ],
+    "lanes": [
+      "ship",
+      "watch",
+      "hold"
+    ],
+    "score": "signal * 2 + slack + confidence - drag * 3",
+    "purpose": "surface the domain-specific cases that need the most careful review"
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "focus": "budget pressure",
+      "signal": 66,
+      "slack": 51,
+      "drag": 10,
+      "confidence": 64,
+      "score": 217,
+      "lane": "ship"
+    },
+    {
+      "name": "stress",
+      "focus": "failure width",
+      "signal": 51,
+      "slack": 54,
+      "drag": 22,
+      "confidence": 62,
+      "score": 152,
+      "lane": "ship"
+    },
+    {
+      "name": "edge",
+      "focus": "recovery gap",
+      "signal": 57,
+      "slack": 22,
+      "drag": 12,
+      "confidence": 49,
+      "score": 149,
+      "lane": "ship"
+    },
+    {
+      "name": "recovery",
+      "focus": "runbook drift",
+      "signal": 65,
+      "slack": 39,
+      "drag": 12,
+      "confidence": 83,
+      "score": 216,
+      "lane": "ship"
+    },
+    {
+      "name": "stale",
+      "focus": "budget pressure",
+      "signal": 64,
+      "slack": 54,
+      "drag": 17,
+      "confidence": 54,
+      "score": 185,
+      "lane": "ship"
+    }
+  ]
+}

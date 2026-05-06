@@ -1,69 +1,40 @@
 # granite-rel-retry-grid
 
-`granite-rel-retry-grid` packages a practical reliability exercise in Solidity. The emphasis is on deterministic behavior, a small public API, and examples that explain the tradeoffs.
+`granite-rel-retry-grid` keeps a focused Solidity implementation around reliability. The project goal is to develop a Solidity command-oriented project for retry scenarios with transition tables, invalid-transition tests, and no network dependency.
 
-## How I Read Granite Rel Retry Grid
+## Why It Exists
 
-The useful thing to inspect here is how the same score rule is represented in code, metadata, and examples. If those three pieces disagree, the audit script should make the drift visible.
+I want this repository to be useful as a quick reading exercise: fixtures first, implementation second, verifier last.
 
-## Problem Shape
+## Granite Rel Retry Grid Review Notes
 
-The goal is to capture the core behavior in code and make the surrounding assumptions obvious. A reader should be able to run the verifier, open the fixtures, and understand why each decision was made.
+For a quick review, compare `budget pressure` with `recovery gap` before reading the middle cases.
 
-## Scenario Walkthrough
+## Features
 
-`degraded` is the first example I would inspect because it lands on the `review` path with a score of -51. The broader file also keeps `degraded` at -51 and `surge` at 181, which gives the model a useful low-to-high spread.
+- `fixtures/domain_review.csv` adds cases for budget pressure and failure width.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/granite-rel-retry-walkthrough.md` walks through the case spread.
+- The Solidity code includes a review path for `budget pressure` and `recovery gap`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Internal Model
+## Architecture Notes
 
-The interesting part is the boundary between accepted and reviewed scenarios. Extended examples sit near that boundary so future edits can show whether the model became more permissive or more cautious. The Solidity project uses Foundry tests and pure contract functions so invariants are cheap to exercise.
+The implementation keeps the scoring rule plain: reward signal and confidence, preserve slack, penalize drag, then classify the result into a review lane.
 
-## Main Behaviors
+The Solidity checks add a pure review lens and Foundry coverage.
 
-- Models failure windows with deterministic scoring and explicit review decisions.
-- Uses fixture data to keep retry budgets changes visible in code review.
-- Includes extended examples for runbook checks, including `surge` and `degraded`.
-- Documents recovery paths tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-
-## How To Run It
+## Usage
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Tests
 
-## Validation
+The verifier is intentionally local. It should fail if the fixture score math, lane assignment, or language-specific test drifts.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+## Limitations And Roadmap
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Repository Map
-
-- `src`: primary implementation
-- `test`: language test directory
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-- `foundry.toml`: Foundry project configuration
-
-## Follow-Up Work
-
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Split the scoring constants into a typed configuration object and validate it before use.
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add one more reliability fixture that focuses on a malformed or borderline input.
-
-## Known Edges
-
-This code is local-first. It makes no claim about deployed usage and avoids credentials, hosted state, and environment-specific setup.
-
-## Run It Locally
-
-Clone the repository, enter the directory, and run the verifier. No database server, cloud account, or token is required.
+The repository is intentionally scoped to local checks. I would expand it by adding adversarial fixtures before adding features.
